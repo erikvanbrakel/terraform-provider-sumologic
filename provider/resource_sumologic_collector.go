@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"os"
+	"errors"
 )
 
 func resourceSumologicCollector() *schema.Resource {
@@ -105,6 +106,11 @@ func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) 
 	}
 
 	body, _ := ioutil.ReadAll(response.Body)
+
+	if response.StatusCode >= 400 {
+		return errors.New(string(body))
+	}
+
 	var resp CollectorRequest
 	err = json.Unmarshal(body, &resp)
 
