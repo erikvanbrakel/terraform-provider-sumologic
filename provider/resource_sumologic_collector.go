@@ -3,11 +3,11 @@ package provider
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"net/http"
-	"encoding/json"
-	"io/ioutil"
 	"fmt"
 	"strconv"
 	"os"
+
+	sumo "../go-sumologic"
 )
 
 func resourceSumologicCollector() *schema.Resource {
@@ -37,27 +37,24 @@ func resourceSumologicCollector() *schema.Resource {
 }
 
 func resourceSumologicCollectorRead(d *schema.ResourceData, meta interface{}) error {
-	accessId := os.Getenv("SL_ACCESSID")
-	accessKey := os.Getenv("SL_ACCESSKEY")
-	url := fmt.Sprintf("https://%s:%s@api.eu.sumologic.com/api/v1/collectors/%s", accessId, accessKey, d.Id())
 
-	response, err := http.Get(url)
+	c := meta.(*sumo.SumologicClient)
 
-	if err != nil {
-		return err
-	}
-
-	body, _ := ioutil.ReadAll(response.Body)
-	var resp CollectorRequest
-	err = json.Unmarshal(body, &resp)
+	id, err := strconv.Atoi(d.Id())
 
 	if err != nil {
 		return err
 	}
 
-	d.Set("name", resp.Collector.Name)
-	d.Set("description", resp.Collector.Description)
-	d.Set("category", resp.Collector.Category)
+	collector, err := c.GetCollector(id)
+
+	if err != nil {
+		return err
+	}
+
+	d.Set("name", collector.Name)
+	d.Set("description", collector.Description)
+	d.Set("category", collector.Category)
 
 	return nil
 }
@@ -83,44 +80,20 @@ func resourceSumologicCollectorDelete(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*SumologicClient)
+	c := meta.(*sumo.SumologicClient)
 
-	req := &CollectorRequest{
-		Collector: CollectorDetails{
-			CollectorType: "Hosted",
-			Name: d.Get("name").(string),
-			Description: d.Get("description").(string),
-			Category: d.Get("category").(string),
-		},
-	}
-
-	body, err := c.Post(req)
+	collector, err := c.CreateCollector(
+		"Hosted",
+		d.Get("name").(string),
+		d.Get("description").(string),
+		d.Get("category").(string),
+	)
 
 	if err != nil {
 		return err
 	}
 
-	var resp CollectorRequest
-	err = json.Unmarshal(body, &resp)
-
-	if err != nil {
-		return err
-	}
-
-	d.SetId(strconv.Itoa(resp.Collector.Id))
-
-	fmt.Print(resp.Collector.Id)
+	d.SetId(strconv.Itoa(collector.Id))
 
 	return resourceSumologicCollectorRead(d, meta)
-}
-type CollectorDetails struct {
-	Id int `json:"ID"`
-	CollectorType string `json:"collectorType"`
-	Name string `json:"name"`
-	Description string `json:"description"`
-	Category string `json:"category"`
-}
-
-type CollectorRequest struct {
-	Collector CollectorDetails `json:"collector"`
 }
