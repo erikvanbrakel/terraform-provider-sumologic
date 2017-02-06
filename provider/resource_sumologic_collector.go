@@ -3,13 +3,11 @@ package provider
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"net/http"
-	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"fmt"
 	"strconv"
 	"os"
-	"errors"
 )
 
 func resourceSumologicCollector() *schema.Resource {
@@ -85,6 +83,8 @@ func resourceSumologicCollectorDelete(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) error {
+	c := meta.(*SumologicClient)
+
 	req := &CollectorRequest{
 		Collector: CollectorDetails{
 			CollectorType: "Hosted",
@@ -93,22 +93,11 @@ func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) 
 			Category: d.Get("category").(string),
 		},
 	}
-	jsonValue, _ := json.Marshal(req)
 
-	accessId := os.Getenv("SL_ACCESSID")
-	accessKey := os.Getenv("SL_ACCESSKEY")
-
-	url := fmt.Sprintf("https://%s:%s@api.eu.sumologic.com/api/v1/collectors", accessId, accessKey)
-	response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
+	body, err := c.Post(req)
 
 	if err != nil {
 		return err
-	}
-
-	body, _ := ioutil.ReadAll(response.Body)
-
-	if response.StatusCode >= 400 {
-		return errors.New(string(body))
 	}
 
 	var resp CollectorRequest
