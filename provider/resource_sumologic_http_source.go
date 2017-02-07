@@ -1,8 +1,8 @@
 package provider
 
 import (
-"github.com/hashicorp/terraform/helper/schema"
-sumologic "../go-sumologic"
+	"github.com/hashicorp/terraform/helper/schema"
+	sumologic "github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 	"strconv"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"os"
 
-	sumo "../go-sumologic"
+	sumo "github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 )
 
 func resourceSumologicCollector() *schema.Resource {

@@ -6,7 +6,7 @@ import (
 
 	"os"
 
-	sumo "../go-sumologic"
+	sumo "github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 )
 
 func Provider() terraform.ResourceProvider {
