@@ -1,7 +1,7 @@
-package terraform_provider_sumologic
+package main
 
 import (
-	"./provider"
+	"github.com/erikvanbrakel/terraform-provider-sumologic/provider"
 	"github.com/hashicorp/terraform/plugin"
 )
 
