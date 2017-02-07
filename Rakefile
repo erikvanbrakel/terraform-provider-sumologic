@@ -47,7 +47,7 @@ namespace "build" do
     end
 
     desc "Package binaries into zip files"
-    task :package => [:all] do
+    task :package => [:all, "dist"] do
         Dir.chdir("pkg") do
             dirs = Dir["*"].reject{|o| not File.directory?(o)}
             dirs.each do |dir|
