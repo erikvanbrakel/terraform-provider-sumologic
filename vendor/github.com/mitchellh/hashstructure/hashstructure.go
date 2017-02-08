@@ -17,12 +17,18 @@ type HashOptions struct {
 	// TagName is the struct tag to look at when hashing the structure.
 	// By default this is "hash".
 	TagName string
+
+	// ZeroNil is flag determining if nil pointer should be treated equal
+	// to a zero value of pointed type. By default this is false.
+	ZeroNil bool
 }
 
 // Hash returns the hash value of an arbitrary value.
 //
 // If opts is nil, then default options will be used. See HashOptions
-// for the default values.
+// for the default values. The same *HashOptions value cannot be used
+// concurrently. None of the values within a *HashOptions struct are 
+// safe to read/write while hashing is being done. 
 //
 // Notes on the value:
 //
@@ -41,7 +47,7 @@ type HashOptions struct {
 //
 // The available tag values are:
 //
-//   * "ignore" - The field will be ignored and not affect the hash code.
+//   * "ignore" or "-" - The field will be ignored and not affect the hash code.
 //
 //   * "set" - The field will be treated as a set, where ordering doesn't
 //             affect the hash code. This only works for slices.
@@ -63,15 +69,17 @@ func Hash(v interface{}, opts *HashOptions) (uint64, error) {
 
 	// Create our walker and walk the structure
 	w := &walker{
-		h:   opts.Hasher,
-		tag: opts.TagName,
+		h:       opts.Hasher,
+		tag:     opts.TagName,
+		zeronil: opts.ZeroNil,
 	}
 	return w.visit(reflect.ValueOf(v), nil)
 }
 
 type walker struct {
-	h   hash.Hash64
-	tag string
+	h       hash.Hash64
+	tag     string
+	zeronil bool
 }
 
 type visitOpts struct {
@@ -84,6 +92,8 @@ type visitOpts struct {
 }
 
 func (w *walker) visit(v reflect.Value, opts *visitOpts) (uint64, error) {
+	t := reflect.TypeOf(0)
+
 	// Loop since these can be wrapped in multiple layers of pointers
 	// and interfaces.
 	for {
@@ -96,6 +106,9 @@ func (w *walker) visit(v reflect.Value, opts *visitOpts) (uint64, error) {
 		}
 
 		if v.Kind() == reflect.Ptr {
+			if w.zeronil {
+				t = v.Type().Elem()
+			}
 			v = reflect.Indirect(v)
 			continue
 		}
@@ -105,8 +118,7 @@ func (w *walker) visit(v reflect.Value, opts *visitOpts) (uint64, error) {
 
 	// If it is nil, treat it like a zero.
 	if !v.IsValid() {
-		var tmp int8
-		v = reflect.ValueOf(tmp)
+		v = reflect.Zero(t)
 	}
 
 	// Binary writing can use raw ints, we have to convert to
@@ -212,7 +224,7 @@ func (w *walker) visit(v reflect.Value, opts *visitOpts) (uint64, error) {
 				}
 
 				tag := fieldType.Tag.Get(w.tag)
-				if tag == "ignore" {
+				if tag == "ignore" || tag == "-" {
 					// Ignore this field
 					continue
 				}
