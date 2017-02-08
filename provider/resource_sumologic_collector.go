@@ -2,10 +2,7 @@ package provider
 
 import (
 	"github.com/hashicorp/terraform/helper/schema"
-	"net/http"
-	"fmt"
 	"strconv"
-	"os"
 
 	sumo "github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 )
@@ -61,22 +58,10 @@ func resourceSumologicCollectorRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceSumologicCollectorDelete(d *schema.ResourceData, meta interface{}) error {
 
-	accessId := os.Getenv("SL_ACCESSID")
-	accessKey := os.Getenv("SL_ACCESSKEY")
-	url := fmt.Sprintf("https://%s:%s@api.eu.sumologic.com/api/v1/collectors/%s", accessId, accessKey, d.Id())
+	c := meta.(*sumo.SumologicClient)
 
-	req, err := http.NewRequest(http.MethodDelete, url, nil)
-
-	if err != nil {
-		return err
-	}
-	_, err = http.DefaultClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	id, _ := strconv.Atoi(d.Id())
+	return c.DeleteCollector(id)
 }
 
 func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) error {
