@@ -46,9 +46,21 @@ func (n *NodeDestroyResource) ModifyCreateBeforeDestroy(v bool) error {
 
 // GraphNodeReferenceable, overriding NodeAbstractResource
 func (n *NodeDestroyResource) ReferenceableName() []string {
+	// We modify our referenceable name to have the suffix of ".destroy"
+	// since depending on the creation side doesn't necessarilly mean
+	// depending on destruction.
+	suffix := ".destroy"
+
+	// If we're CBD, we also append "-cbd". This is because CBD will setup
+	// its own edges (in CBDEdgeTransformer). Depending on the "destroy"
+	// side generally doesn't mean depending on CBD as well. See GH-11349
+	if n.CreateBeforeDestroy() {
+		suffix += "-cbd"
+	}
+
 	result := n.NodeAbstractResource.ReferenceableName()
 	for i, v := range result {
-		result[i] = v + ".destroy"
+		result[i] = v + suffix
 	}
 
 	return result
@@ -107,6 +119,17 @@ func (n *NodeDestroyResource) EvalTree() EvalNode {
 		uniqueExtra: "destroy",
 	}
 
+	// Build the resource for eval
+	addr := n.Addr
+	resource := &Resource{
+		Name:       addr.Name,
+		Type:       addr.Type,
+		CountIndex: addr.Index,
+	}
+	if resource.CountIndex < 0 {
+		resource.CountIndex = 0
+	}
+
 	// Get our state
 	rs := n.ResourceState
 	if rs == nil {
@@ -160,6 +183,48 @@ func (n *NodeDestroyResource) EvalTree() EvalNode {
 				&EvalRequireState{
 					State: &state,
 				},
+
+				// Call pre-apply hook
+				&EvalApplyPre{
+					Info:  info,
+					State: &state,
+					Diff:  &diffApply,
+				},
+
+				// Run destroy provisioners if not tainted
+				&EvalIf{
+					If: func(ctx EvalContext) (bool, error) {
+						if state != nil && state.Tainted {
+							return false, nil
+						}
+
+						return true, nil
+					},
+
+					Then: &EvalApplyProvisioners{
+						Info:           info,
+						State:          &state,
+						Resource:       n.Config,
+						InterpResource: resource,
+						Error:          &err,
+						When:           config.ProvisionerWhenDestroy,
+					},
+				},
+
+				// If we have a provisioning error, then we just call
+				// the post-apply hook now.
+				&EvalIf{
+					If: func(ctx EvalContext) (bool, error) {
+						return err != nil, nil
+					},
+
+					Then: &EvalApplyPost{
+						Info:  info,
+						State: &state,
+						Error: &err,
+					},
+				},
+
 				// Make sure we handle data sources properly.
 				&EvalIf{
 					If: func(ctx EvalContext) (bool, error) {

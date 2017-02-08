@@ -1,23 +1,26 @@
 package terraform
 
 import (
+	"github.com/hashicorp/terraform/config"
 	"github.com/hashicorp/terraform/config/module"
 	"github.com/hashicorp/terraform/dag"
 )
 
-// ApplyGraphBuilder implements GraphBuilder and is responsible for building
-// a graph for applying a Terraform diff.
+// RefreshGraphBuilder implements GraphBuilder and is responsible for building
+// a graph for refreshing (updating the Terraform state).
 //
-// Because the graph is built from the diff (vs. the config or state),
-// this helps ensure that the apply-time graph doesn't modify any resources
-// that aren't explicitly in the diff. There are other scenarios where the
-// diff can be deviated, so this is just one layer of protection.
-type ApplyGraphBuilder struct {
+// The primary difference between this graph and others:
+//
+//   * Based on the state since it represents the only resources that
+//     need to be refreshed.
+//
+//   * Ignores lifecycle options since no lifecycle events occur here. This
+//     simplifies the graph significantly since complex transforms such as
+//     create-before-destroy can be completely ignored.
+//
+type RefreshGraphBuilder struct {
 	// Module is the root module for the graph to build.
 	Module *module.Tree
-
-	// Diff is the diff to apply.
-	Diff *Diff
 
 	// State is the current state
 	State *State
@@ -25,30 +28,27 @@ type ApplyGraphBuilder struct {
 	// Providers is the list of providers supported.
 	Providers []string
 
-	// Provisioners is the list of provisioners supported.
-	Provisioners []string
+	// Targets are resources to target
+	Targets []string
 
 	// DisableReduce, if true, will not reduce the graph. Great for testing.
 	DisableReduce bool
-
-	// Destroy, if true, represents a pure destroy operation
-	Destroy bool
 
 	// Validate will do structural validation of the graph.
 	Validate bool
 }
 
 // See GraphBuilder
-func (b *ApplyGraphBuilder) Build(path []string) (*Graph, error) {
+func (b *RefreshGraphBuilder) Build(path []string) (*Graph, error) {
 	return (&BasicGraphBuilder{
 		Steps:    b.Steps(),
 		Validate: b.Validate,
-		Name:     "ApplyGraphBuilder",
+		Name:     "RefreshGraphBuilder",
 	}).Build(path)
 }
 
 // See GraphBuilder
-func (b *ApplyGraphBuilder) Steps() []GraphTransformer {
+func (b *RefreshGraphBuilder) Steps() []GraphTransformer {
 	// Custom factory for creating providers.
 	concreteProvider := func(a *NodeAbstractProvider) dag.Vertex {
 		return &NodeApplyableProvider{
@@ -57,29 +57,43 @@ func (b *ApplyGraphBuilder) Steps() []GraphTransformer {
 	}
 
 	concreteResource := func(a *NodeAbstractResource) dag.Vertex {
-		return &NodeApplyableResource{
+		return &NodeRefreshableResource{
 			NodeAbstractResource: a,
 		}
 	}
 
-	steps := []GraphTransformer{
-		// Creates all the nodes represented in the diff.
-		&DiffTransformer{
-			Concrete: concreteResource,
+	concreteDataResource := func(a *NodeAbstractResource) dag.Vertex {
+		return &NodeRefreshableDataResource{
+			NodeAbstractCountResource: &NodeAbstractCountResource{
+				NodeAbstractResource: a,
+			},
+		}
+	}
 
-			Diff:   b.Diff,
-			Module: b.Module,
-			State:  b.State,
+	steps := []GraphTransformer{
+		// Creates all the resources represented in the state
+		&StateTransformer{
+			Concrete: concreteResource,
+			State:    b.State,
 		},
 
-		// Create orphan output nodes
-		&OrphanOutputTransformer{Module: b.Module, State: b.State},
+		// Creates all the data resources that aren't in the state
+		&ConfigTransformer{
+			Concrete:   concreteDataResource,
+			Module:     b.Module,
+			Unique:     true,
+			ModeFilter: true,
+			Mode:       config.DataResourceMode,
+		},
+
+		// Attach the state
+		&AttachStateTransformer{State: b.State},
 
 		// Attach the configuration to any resources
 		&AttachResourceConfigTransformer{Module: b.Module},
 
-		// Attach the state
-		&AttachStateTransformer{State: b.State},
+		// Add root variables
+		&RootVariableTransformer{Module: b.Module},
 
 		// Create all the providers
 		&MissingProviderTransformer{Providers: b.Providers, Concrete: concreteProvider},
@@ -88,31 +102,18 @@ func (b *ApplyGraphBuilder) Steps() []GraphTransformer {
 		&ParentProviderTransformer{},
 		&AttachProviderConfigTransformer{Module: b.Module},
 
-		// Destruction ordering
-		&DestroyEdgeTransformer{Module: b.Module, State: b.State},
-		GraphTransformIf(
-			func() bool { return !b.Destroy },
-			&CBDEdgeTransformer{Module: b.Module, State: b.State},
-		),
-
-		// Provisioner-related transformations
-		&MissingProvisionerTransformer{Provisioners: b.Provisioners},
-		&ProvisionerTransformer{},
-
-		// Add root variables
-		&RootVariableTransformer{Module: b.Module},
-
 		// Add the outputs
 		&OutputTransformer{Module: b.Module},
 
 		// Add module variables
 		&ModuleVariableTransformer{Module: b.Module},
 
-		// Connect references so ordering is correct
+		// Connect so that the references are ready for targeting. We'll
+		// have to connect again later for providers and so on.
 		&ReferenceTransformer{},
 
-		// Add the node to fix the state count boundaries
-		&CountBoundaryTransformer{},
+		// Target
+		&TargetsTransformer{Targets: b.Targets},
 
 		// Single root
 		&RootTransformer{},
