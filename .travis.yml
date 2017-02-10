@@ -1,0 +1,24 @@
+language: go
+
+go:
+  - 1.7
+
+install:
+  - go get -u github.com/mitchellh/gox
+
+script:
+  # Testing scripts etc
+
+after_success:
+  - |-
+    gox -output "dist/{{.Dir}}-{{.OS}}-{{.Arch}}" -os="linux darwin windows freebsd openbsd solaris" -arch="amd64 386 arm" -osarch="!darwin/arm !darwin/386"
+
+deploy:
+  provider: releases
+  file_glob: true
+  api_key: "$GITHUB_TOKEN"
+  file: "dist/*"
+  skip_cleanup: true
+  on:
+    tags: true
+    go: 1.7
