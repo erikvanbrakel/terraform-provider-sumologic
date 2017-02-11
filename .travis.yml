@@ -5,19 +5,18 @@ go:
 
 install:
   - go get -u github.com/mitchellh/gox
+  - chmod +x ./build/cross-compile.sh
 
 script:
   # Testing scripts etc
 
-after_success:
-  - |-
-    gox -output "dist/{{.Dir}}-{{.OS}}-{{.Arch}}" -os="linux darwin windows freebsd openbsd solaris" -arch="amd64 386 arm" -osarch="!darwin/arm !darwin/386"
+after_success: ./build/cross-compile.sh
 
 deploy:
   provider: releases
   file_glob: true
   api_key: "$GITHUB_TOKEN"
-  file: "dist/*"
+  file: "pkg/*"
   skip_cleanup: true
   on:
     tags: true
