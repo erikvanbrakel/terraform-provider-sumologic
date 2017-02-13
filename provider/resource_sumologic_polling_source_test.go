@@ -11,6 +11,9 @@ func TestAccSumologicPollingSource(t *testing.T) {
 		Steps: []resource.TestStep {
 			{
 				Config: testAccSumologicPollingSourceConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("sumologic_polling_source.s3_audit", "content_type"),
+				),
 			},
 		}})
 }
@@ -25,6 +28,7 @@ resource "sumologic_collector" "AWS" {
 resource "sumologic_polling_source" "s3_audit" {
     collector_id = "${sumologic_collector.AWS.id}"
     name = "Amazon S3 Audit"
+    category = "some/category"
     content_type = "AwsS3AuditBucket"
     scan_interval = 1
     paused = false
