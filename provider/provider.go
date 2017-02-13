@@ -32,6 +32,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"sumologic_collector" : resourceSumologicCollector(),
 			"sumologic_http_source" : resourceSumologicHttpSource(),
+			"sumologic_polling_source" : resourceSumologicPollingSource(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
