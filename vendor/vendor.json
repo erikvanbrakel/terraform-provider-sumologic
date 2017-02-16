@@ -3,6 +3,18 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "LLVyR2dAgkihu0+HdZF+JK0gMMs=",
+			"path": "github.com/agl/ed25519",
+			"revision": "5312a61534124124185d41f09206b9fef1d88403",
+			"revisionTime": "2017-01-16T20:05:12Z"
+		},
+		{
+			"checksumSHA1": "30PBqj9BW03KCVqASvLg3bR+xYc=",
+			"path": "github.com/agl/ed25519/edwards25519",
+			"revision": "5312a61534124124185d41f09206b9fef1d88403",
+			"revisionTime": "2017-01-16T20:05:12Z"
+		},
+		{
 			"checksumSHA1": "kn+zdUr5TNsoAX8BgjOaWYtMT5U=",
 			"path": "github.com/apparentlymart/go-cidr/cidr",
 			"revision": "a3ebdb999b831ecb6ab8a226e31b07b2b9061c47",
@@ -183,6 +195,12 @@
 			"revisionTime": "2014-10-28T05:47:10Z"
 		},
 		{
+			"checksumSHA1": "b8F628srIitj5p7Y130xc9k0QWs=",
+			"path": "github.com/hashicorp/go-cleanhttp",
+			"revision": "3573b8b52aa7b37b9358d966a898feb387f62437",
+			"revisionTime": "2017-02-11T01:34:15Z"
+		},
+		{
 			"checksumSHA1": "nsL2kI426RMuq1jw15e7igFqdIY=",
 			"path": "github.com/hashicorp/go-getter",
 			"revision": "c3d66e76678dce180a7b452653472f949aedfbcd",
@@ -333,6 +351,14 @@
 			"revisionTime": "2017-02-08T03:12:03Z"
 		},
 		{
+			"checksumSHA1": "FH5eOEHfHgdxPC/JnfmCeSBk66U=",
+			"path": "github.com/hashicorp/terraform/helper/encryption",
+			"revision": "df4bcf64828598a25bd41f00470b2ab3a66f3169",
+			"revisionTime": "2017-02-07T17:23:53Z",
+			"version": "v0.8.6",
+			"versionExact": "v0.8.6"
+		},
+		{
 			"checksumSHA1": "Vbo55GDzPgG/L/+W2pcvDhxrPZc=",
 			"path": "github.com/hashicorp/terraform/helper/experiment",
 			"revision": "af61d566c2ceafceba7b111a8c2b8fce6e7386e2",
@@ -357,20 +383,20 @@
 			"revisionTime": "2017-02-08T03:12:03Z"
 		},
 		{
-			"checksumSHA1": "0xNzccMathXL2vJMCicNIbWjYGw=",
+			"checksumSHA1": "Nb3GUzvifZ0t8dzn7gsYPaAzk/o=",
 			"path": "github.com/hashicorp/terraform/helper/resource",
-			"revision": "df4bcf64828598a25bd41f00470b2ab3a66f3169",
-			"revisionTime": "2017-02-07T17:23:53Z",
-			"version": "v0.8.6",
-			"versionExact": "v0.8.6"
+			"revision": "4e96da57eef7b1bfd6e2752839e897f932752656",
+			"revisionTime": "2017-02-15T22:35:37Z",
+			"version": "v0.9.0-beta1",
+			"versionExact": "v0.9.0-beta1"
 		},
 		{
-			"checksumSHA1": "vDGokfPub++Ft4l+NwnUNlMXB1U=",
+			"checksumSHA1": "+TMHyxYqnPt20mYb6zS+VbdPT+s=",
 			"path": "github.com/hashicorp/terraform/helper/schema",
-			"revision": "df4bcf64828598a25bd41f00470b2ab3a66f3169",
-			"revisionTime": "2017-02-07T17:23:53Z",
-			"version": "v0.8.6",
-			"versionExact": "v0.8.6"
+			"revision": "4e96da57eef7b1bfd6e2752839e897f932752656",
+			"revisionTime": "2017-02-15T22:35:37Z",
+			"version": "v0.9.0-beta1",
+			"versionExact": "v0.9.0-beta1"
 		},
 		{
 			"checksumSHA1": "oLui7dYxhzfAczwwdNZDm4tzHtk=",
@@ -379,18 +405,38 @@
 			"revisionTime": "2017-02-08T03:12:03Z"
 		},
 		{
-			"checksumSHA1": "z59GrKQVRxwgvc1sQA6Yh2F/q18=",
+			"checksumSHA1": "Um9XC4rlIcFFvROlojYWjb8T11k=",
 			"path": "github.com/hashicorp/terraform/plugin",
-			"revision": "df4bcf64828598a25bd41f00470b2ab3a66f3169",
-			"revisionTime": "2017-02-07T17:23:53Z",
-			"version": "v0.8.6",
-			"versionExact": "v0.8.6"
+			"revision": "4e96da57eef7b1bfd6e2752839e897f932752656",
+			"revisionTime": "2017-02-15T22:35:37Z",
+			"version": "v0.9.0-beta1",
+			"versionExact": "v0.9.0-beta1"
 		},
 		{
-			"checksumSHA1": "Cn0Za+A1ZAxshq5/aOmWlZ7hcws=",
+			"checksumSHA1": "N1LPsILAta3RLPxgvROJ7ze0PAw=",
 			"path": "github.com/hashicorp/terraform/terraform",
-			"revision": "af61d566c2ceafceba7b111a8c2b8fce6e7386e2",
-			"revisionTime": "2017-02-08T03:12:03Z"
+			"revision": "4e96da57eef7b1bfd6e2752839e897f932752656",
+			"revisionTime": "2017-02-15T22:35:37Z",
+			"version": "v0.9.0-beta1",
+			"versionExact": "v0.9.0-beta1"
+		},
+		{
+			"checksumSHA1": "ft77GtqeZEeCXioGpF/s6DlGm/U=",
+			"path": "github.com/hashicorp/vault/helper/compressutil",
+			"revision": "5f6c4a9696c563135793d569c0e6b2aa23691556",
+			"revisionTime": "2017-02-11T00:57:53Z"
+		},
+		{
+			"checksumSHA1": "yUiSTPf0QUuL2r/81sjuytqBoeQ=",
+			"path": "github.com/hashicorp/vault/helper/jsonutil",
+			"revision": "5f6c4a9696c563135793d569c0e6b2aa23691556",
+			"revisionTime": "2017-02-11T00:57:53Z"
+		},
+		{
+			"checksumSHA1": "YmXAnTwbzhLLBZM+1tQrJiG3qpc=",
+			"path": "github.com/hashicorp/vault/helper/pgpkeys",
+			"revision": "5f6c4a9696c563135793d569c0e6b2aa23691556",
+			"revisionTime": "2017-02-11T00:57:53Z"
 		},
 		{
 			"checksumSHA1": "ZhK6IO2XN81Y+3RAjTcVm1Ic7oU=",
@@ -403,6 +449,72 @@
 			"path": "github.com/jmespath/go-jmespath",
 			"revision": "bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d",
 			"revisionTime": "2016-08-03T19:07:31Z"
+		},
+		{
+			"checksumSHA1": "VJk3rOWfxEV9Ilig5lgzH1qg8Ss=",
+			"path": "github.com/keybase/go-crypto/brainpool",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "rnRjEJs5luF+DIXp2J6LFcQk8Gg=",
+			"path": "github.com/keybase/go-crypto/cast5",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "F5++ZQS5Vt7hd6lxPCKTffvph1A=",
+			"path": "github.com/keybase/go-crypto/curve25519",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "w2xCoKHxu0Ccg4Ebxqo3YN9ysGI=",
+			"path": "github.com/keybase/go-crypto/openpgp",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "y61I7+hCekP1Rk0qxgUQ+iozXak=",
+			"path": "github.com/keybase/go-crypto/openpgp/armor",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "nWhmwjBJqPSvkCWqaap2Z9EiS1k=",
+			"path": "github.com/keybase/go-crypto/openpgp/ecdh",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "uxXG9IC/XF8jwwvZUbW65+x8/+M=",
+			"path": "github.com/keybase/go-crypto/openpgp/elgamal",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "EyUf82Yknzc75m8RcA21CNQINw0=",
+			"path": "github.com/keybase/go-crypto/openpgp/errors",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "esp0WrWFo5Ohk/bXhjC5NrzWnS0=",
+			"path": "github.com/keybase/go-crypto/openpgp/packet",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "BGDxg1Xtsz0DSPzdQGJLLQqfYc8=",
+			"path": "github.com/keybase/go-crypto/openpgp/s2k",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
+		},
+		{
+			"checksumSHA1": "rE3pp7b3gfcmBregzpIvN5IdFhY=",
+			"path": "github.com/keybase/go-crypto/rsa",
+			"revision": "e721397a850bd2d1433ecf6fbbb5dcfcd58131de",
+			"revisionTime": "2017-02-06T19:27:00Z"
 		},
 		{
 			"checksumSHA1": "kSmDazz+cokgcHQT7q56Na+IBe0=",
