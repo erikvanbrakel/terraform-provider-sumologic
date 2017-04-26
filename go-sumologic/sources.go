@@ -1,21 +1,22 @@
 package sumologic
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 type HttpSource struct {
 	Source struct {
-		Type string `json:"sourceType"`
-		Id int `json:"id,omitempty"`
-		Name string `json:"name"`
-		MessagePerRequest bool `json:"messagePerRequest"`
+		Type              string `json:"sourceType"`
+		Id                int    `json:"id,omitempty"`
+		Name              string `json:"name"`
+		MessagePerRequest bool   `json:"messagePerRequest"`
+		Url               string `json:"url"`
 	} `json:"source"`
 }
 
 func (s *SumologicClient) CreateHttpSource(name string, messagePerRequest bool, collectorId int) (*HttpSource, error) {
-	request := HttpSource {}
+	request := HttpSource{}
 
 	request.Source.Type = "HTTP"
 	request.Source.Name = name
@@ -56,15 +57,15 @@ func (s *SumologicClient) CreatePollingSource(name, content_type, category strin
 	request := CreatePollingSource{
 		ApiVersion: "v1",
 		Source: PollingSource{
-			SourceType: "Polling",
-			Name: name,
-			Category: category,
-			ContentType: content_type,
+			SourceType:   "Polling",
+			Name:         name,
+			Category:     category,
+			ContentType:  content_type,
 			ScanInterval: scan_interval,
-			Paused: false,
-			ThirdPartyRef: PollingThirdPartyRef {
+			Paused:       false,
+			ThirdPartyRef: PollingThirdPartyRef{
 				Resources: []PollingResource{
-					{ServiceType: content_type, Authentication: auth, Path: path },
+					{ServiceType: content_type, Authentication: auth, Path: path},
 				},
 			},
 		},
@@ -98,8 +99,8 @@ func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingS
 }
 
 type CreatePollingSource struct {
-	ApiVersion string `json:"api.version"`
-	Source PollingSource `json:"source"`
+	ApiVersion string        `json:"api.version"`
+	Source     PollingSource `json:"source"`
 }
 
 type GetPollingSource struct {
@@ -107,13 +108,13 @@ type GetPollingSource struct {
 }
 
 type PollingSource struct {
-	Id int `json:"id,omitempty"`
-	SourceType string `json:"sourceType"`
-	Name string `json:"name"`
-	ContentType string `json:"contentType"`
-	ScanInterval int `json:"scanInterval"`
-	Paused bool `json:"paused"`
-	Category string `json:"category"`
+	Id            int                  `json:"id,omitempty"`
+	SourceType    string               `json:"sourceType"`
+	Name          string               `json:"name"`
+	ContentType   string               `json:"contentType"`
+	ScanInterval  int                  `json:"scanInterval"`
+	Paused        bool                 `json:"paused"`
+	Category      string               `json:"category"`
 	ThirdPartyRef PollingThirdPartyRef `json:"thirdPartyRef,omitempty"`
 }
 
@@ -122,19 +123,19 @@ type PollingThirdPartyRef struct {
 }
 
 type PollingResource struct {
-	ServiceType string  `json:"serviceType"`
+	ServiceType    string                `json:"serviceType"`
 	Authentication PollingAuthentication `json:"authentication"`
-	Path PollingPath `json:"path"`
+	Path           PollingPath           `json:"path"`
 }
 
 type PollingAuthentication struct {
-	Type string `json:"type"`
-	AwsId string `json:"awsId"`
+	Type   string `json:"type"`
+	AwsId  string `json:"awsId"`
 	AwsKey string `json:"awsKey"`
 }
 
 type PollingPath struct {
-	Type string `json:"type"`
-	BucketName string `json:"bucketName"`
+	Type           string `json:"type"`
+	BucketName     string `json:"bucketName"`
 	PathExpression string `json:"pathExpression"`
 }

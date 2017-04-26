@@ -1,32 +1,36 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
 	sumologic "github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
+	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
 )
 
 func resourceSumologicHttpSource() *schema.Resource {
-	return &schema.Resource {
+	return &schema.Resource{
 		Create: resourceSumologicHttpSourceCreate,
-		Read: resourceSumologicHttpSourceRead,
+		Read:   resourceSumologicHttpSourceRead,
 		Delete: resourceSumologicHttpSourceDelete,
 
-		Schema: map[string]*schema.Schema {
-			"name" : {
-				Type: schema.TypeString,
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"messagePerRequest" : {
-				Type: schema.TypeBool,
+			"messagePerRequest": {
+				Type:     schema.TypeBool,
 				Required: true,
 				ForceNew: true,
 			},
-			"collector_id" : {
-				Type: schema.TypeInt,
+			"collector_id": {
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
+			},
+			"url": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
@@ -57,6 +61,7 @@ func resourceSumologicHttpSourceRead(d *schema.ResourceData, meta interface{}) e
 
 	d.Set("name", response.Source.Name)
 	d.Set("message_per_request", response.Source.MessagePerRequest)
+	d.Set("url", response.Source.Url)
 
 	return nil
 }
@@ -64,4 +69,3 @@ func resourceSumologicHttpSourceRead(d *schema.ResourceData, meta interface{}) e
 func resourceSumologicHttpSourceDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
-
