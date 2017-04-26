@@ -67,5 +67,12 @@ func resourceSumologicHttpSourceRead(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceSumologicHttpSourceDelete(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	c := meta.(*sumologic.SumologicClient)
+
+	id, _ := strconv.Atoi(d.Id())
+	collector_id, _ := d.Get("collector_id").(int)
+
+	_, err := c.DestroySource(id, collector_id)
+
+	return err
 }
