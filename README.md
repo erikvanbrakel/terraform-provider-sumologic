@@ -27,7 +27,7 @@ provider "sumologic" {
 
 ## Resources
 
-### sumologic_collector
+### sumologic\_collector
 
 ```
 resource "sumologic_collector" "collector" {
@@ -37,7 +37,20 @@ resource "sumologic_collector" "collector" {
 }
 ```
 
-### sumologic_http_source
+#### Argument reference
+
+- `name`: Name of the HTTP source
+- `description`: Long description of the collector
+- `category`: Category name of the collector
+
+#### Attributes reference
+
+- `id`: The collector id
+- `name`: Name of the HTTP source
+- `description`: Long description of the collector
+- `category`: Category name of the collector
+
+### sumologic\_http\_source
 
 ```
 resource "sumologic_http_source" "http" {
@@ -47,7 +60,20 @@ resource "sumologic_http_source" "http" {
 }
 ```
 
-### sumologic_polling_source
+#### Argument reference
+
+- `name`: Name of the HTTP source
+- `messagePerRequest`: When set to true, only a single message will be sent for each HTTP request.
+- `collector_id`: Id of the collector terraform resource
+
+#### Attributes reference
+
+- `name`: Name of the HTTP source
+- `messagePerRequest`: When set to true, only a single message will be sent for each HTTP request.
+- `collector_id`: Id of the collector terraform resource
+- `url`: Collector endpoint URL **Public endpoint will be stored in plain text in tfstate**
+
+### sumologic\_polling\_source
 
 ```
 resource "sumologic_polling_source" "s3_audit" {
