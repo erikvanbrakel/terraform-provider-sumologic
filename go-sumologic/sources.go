@@ -38,6 +38,12 @@ func (s *SumologicClient) CreateHttpSource(name string, messagePerRequest bool, 
 	return &response, nil
 }
 
+func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (*HttpSource, error) {
+	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
+
+	return nil, err
+}
+
 func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
 
 	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
