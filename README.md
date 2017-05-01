@@ -25,6 +25,11 @@ provider "sumologic" {
 }
 ```
 
+or use the following environment variables to set credentials:
+
+- `SL_ACCESSID`: Access ID of the access key pair in Sumologic
+- `SL_ACCESSKEY`: Access Key of the access key pair in Sumologic
+
 ## Resources
 
 ### sumologic\_collector
