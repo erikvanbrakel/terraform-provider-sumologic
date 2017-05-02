@@ -32,6 +32,11 @@ func resourceSumologicHttpSource() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"category" : {
+				Type:	  schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -41,6 +46,7 @@ func resourceSumologicHttpSourceCreate(d *schema.ResourceData, meta interface{})
 
 	response, err := c.CreateHttpSource(
 		d.Get("name").(string),
+		d.Get("category").(string),
 		d.Get("messagePerRequest").(bool),
 		d.Get("collector_id").(int),
 	)
