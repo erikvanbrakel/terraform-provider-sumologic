@@ -12,15 +12,21 @@ type HttpSource struct {
 		Name              string `json:"name"`
 		MessagePerRequest bool   `json:"messagePerRequest"`
 		Url               string `json:"url"`
+		Category	  string `json:"category"`
 	} `json:"source"`
 }
 
-func (s *SumologicClient) CreateHttpSource(name string, messagePerRequest bool, collectorId int) (*HttpSource, error) {
+func (s *SumologicClient) CreateHttpSource(
+		name, category string,
+		messagePerRequest bool,
+		collectorId int,
+	) (*HttpSource, error) {
 	request := HttpSource{}
 
 	request.Source.Type = "HTTP"
 	request.Source.Name = name
 	request.Source.MessagePerRequest = messagePerRequest
+	request.Source.Category = category
 
 	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
 	body, err := s.Post(urlPath, request)

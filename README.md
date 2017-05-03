@@ -59,9 +59,10 @@ resource "sumologic_collector" "collector" {
 
 ```
 resource "sumologic_http_source" "http" {
-    name = "" # string
+    name              = "" # string
     messagePerRequest = "" # bool
-    collector_id = "${sumologic_collector.collector.id}"
+    category          = "" # string
+    collector_id      = "${sumologic_collector.collector.id}"
 }
 ```
 
@@ -70,6 +71,7 @@ resource "sumologic_http_source" "http" {
 - `name`: Name of the HTTP source
 - `messagePerRequest`: When set to true, only a single message will be sent for each HTTP request.
 - `collector_id`: Id of the collector terraform resource
+- `category`: Category name of the source
 
 #### Attributes reference
 
@@ -77,6 +79,8 @@ resource "sumologic_http_source" "http" {
 - `messagePerRequest`: When set to true, only a single message will be sent for each HTTP request.
 - `collector_id`: Id of the collector terraform resource
 - `url`: Collector endpoint URL **Public endpoint will be stored in plain text in tfstate**
+- `category`: Category name of the source
+
 
 ### sumologic\_polling\_source
 
