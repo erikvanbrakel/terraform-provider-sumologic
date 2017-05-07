@@ -64,7 +64,7 @@ func (s *SumologicClient) CreateHttpSource(
 		name, category string,
 		messagePerRequest bool,
 		collectorId int,
-	) (*HttpSource, error) {
+	) (int, error) {
 
 	type HttpSourceMessage struct {
 		Source HttpSource `json:"source"`
@@ -81,25 +81,26 @@ func (s *SumologicClient) CreateHttpSource(
 	body, err := s.Post(urlPath, request)
 
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
 
 	var response HttpSourceMessage
 	err = json.Unmarshal(body, &response)
 
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
 
 	source := response.Source
 
-	return &source, nil
+	return source.Id, nil
 }
 
-func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (*HttpSource, error) {
+func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (error) {
+
 	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
 
-	return nil, err
+	return err
 }
 
 func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
@@ -153,6 +154,10 @@ func (s *SumologicClient) CreatePollingSource(name, content_type, category strin
 
 	var response PollingSourceMessage
 	err = json.Unmarshal(body, &response)
+
+	if err != nil {
+		return -1, err
+	}
 
 	return response.Source.Id, nil
 }

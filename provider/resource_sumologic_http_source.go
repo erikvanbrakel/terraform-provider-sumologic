@@ -44,7 +44,7 @@ func resourceSumologicHttpSource() *schema.Resource {
 func resourceSumologicHttpSourceCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*sumologic.SumologicClient)
 
-	source, err := c.CreateHttpSource(
+	id, err := c.CreateHttpSource(
 		d.Get("name").(string),
 		d.Get("category").(string),
 		d.Get("messagePerRequest").(bool),
@@ -55,7 +55,7 @@ func resourceSumologicHttpSourceCreate(d *schema.ResourceData, meta interface{})
 		return err
 	}
 
-	d.SetId(strconv.Itoa(source.Id))
+	d.SetId(strconv.Itoa(id))
 	return resourceSumologicHttpSourceRead(d, meta)
 }
 
@@ -82,7 +82,5 @@ func resourceSumologicHttpSourceDelete(d *schema.ResourceData, meta interface{})
 	id, _ := strconv.Atoi(d.Id())
 	collector_id, _ := d.Get("collector_id").(int)
 
-	_, err := c.DestroySource(id, collector_id)
-
-	return err
+	return c.DestroySource(id, collector_id)
 }
