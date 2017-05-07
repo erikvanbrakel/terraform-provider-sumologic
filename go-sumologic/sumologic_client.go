@@ -23,6 +23,12 @@ var endpoints map[string]string = map[string]string {
 	"au" : "https://api.au.sumologic.com/api/v1/",
 }
 
+type ErrorResponse struct {
+	Status		int `json:"status"`
+	Code		string `json:"code"`
+	Message		string `json:"message"`
+}
+
 func(s *SumologicClient) Post(urlPath string, payload interface{}) ([]byte, error) {
 	relativeUrl, _ := url.Parse(urlPath)
 	url := s.BaseUrl.ResolveReference(relativeUrl)
@@ -41,7 +47,9 @@ func(s *SumologicClient) Post(urlPath string, payload interface{}) ([]byte, erro
 	d,_ := ioutil.ReadAll(resp.Body)
 
 	if resp.StatusCode >= 400 {
-		return nil, errors.New(string(d))
+		var errorResponse ErrorResponse
+		_ = json.Unmarshal(d, &errorResponse)
+		return nil, errors.New(errorResponse.Message)
 	}
 
 	return d, nil
@@ -60,7 +68,9 @@ func(s *SumologicClient) Get(urlPath string) ([]byte, error) {
 	d,_ := ioutil.ReadAll(resp.Body)
 
 	if resp.StatusCode >= 400 {
-		return nil, errors.New(string(d))
+		var errorResponse ErrorResponse
+		_ = json.Unmarshal(d, &errorResponse)
+		return nil, errors.New(errorResponse.Message)
 	}
 
 	return d, nil

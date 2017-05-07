@@ -37,9 +37,14 @@ func (s *SumologicClient) CreateCollector(collectorType, name, description, cate
 	}
 
 	var response CollectorResponse
-	responseBody, _ := s.Post("collectors", request)
 
-	err := json.Unmarshal(responseBody, &response)
+	responseBody, err := s.Post("collectors", request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(responseBody, &response)
 
 	if err != nil {
 		return nil, err
