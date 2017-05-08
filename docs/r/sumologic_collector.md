@@ -14,6 +14,7 @@ The following arguments are supported:
 - `name` - (Required) The name of the collector. This is required, and has to be unique. Changing this will force recreation the collector.
 - `description` - (Optional) The description of the collector.
 - `category` - (Optional) The default source category for any source attached to this collector. Can be overridden in the configuration of said sources.
+- `timezone` - (Optional) The time zone to use for this collector. The value follows the [tzdata][2] naming convention.
 
 ## Attributes reference
 The following attributes are exported:
@@ -23,3 +24,4 @@ The following attributes are exported:
 
 [0]: ../README.md
 [1]: https://help.sumologic.com/Send_Data/Hosted_Collectors
+[2]: https://en.wikipedia.org/wiki/Tz_database

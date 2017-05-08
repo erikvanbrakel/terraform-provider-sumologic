@@ -32,6 +32,12 @@ func resourceSumologicCollector() *schema.Resource {
 				ForceNew: false,
 				Default:  "",
 			},
+			"timezone": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "UTC",
+			},
 		},
 	}
 }
@@ -107,5 +113,6 @@ func resourceToCollector(d *schema.ResourceData) sumo.Collector {
 		Name:          d.Get("name").(string),
 		Description:   d.Get("description").(string),
 		Category:      d.Get("category").(string),
+		TimeZone:      d.Get("timezone").(string),
 	}
 }
