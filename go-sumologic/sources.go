@@ -35,15 +35,11 @@ func (s *SumologicClient) DestroySource(sourceId int, collectorId int) error {
 // HTTP source specific
 type HttpSource struct {
 	Source
-	MessagePerRequest bool   `json:"messagePerRequest,omitempty"`
+	MessagePerRequest bool   `json:"messagePerRequest"`
 	Url               string `json:"url,omitempty"`
 }
 
-func (s *SumologicClient) CreateHttpSource(
-	name, category string,
-	messagePerRequest bool,
-	collectorId int,
-) (int, error) {
+func (s *SumologicClient) CreateHttpSource(name string, collectorId int) (int, error) {
 
 	type HttpSourceMessage struct {
 		Source HttpSource `json:"source"`
@@ -51,10 +47,12 @@ func (s *SumologicClient) CreateHttpSource(
 
 	request := HttpSourceMessage{}
 
-	request.Source.Type = "HTTP"
-	request.Source.Name = name
-	request.Source.MessagePerRequest = messagePerRequest
-	request.Source.Category = category
+	source := HttpSource{}
+
+	source.Type = "HTTP"
+	source.Name = name
+
+	request.Source = source
 
 	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
 	body, err := s.Post(urlPath, request)
@@ -70,9 +68,9 @@ func (s *SumologicClient) CreateHttpSource(
 		return -1, err
 	}
 
-	source := response.Source
+	newSource := response.Source
 
-	return source.Id, nil
+	return newSource.Id, nil
 }
 
 func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
@@ -95,6 +93,29 @@ func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource,
 
 	return &source, nil
 }
+
+func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) error {
+
+	url := fmt.Sprintf("collectors/%d/sources/%d", collectorId, source.Id)
+
+	type HttpSourceMessage struct {
+		Source HttpSource `json:"source"`
+	}
+
+	request := HttpSourceMessage {
+		Source: source,
+	}
+
+	_, err := s.Put(url, request)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 
 // Polling source specific
 type PollingSource struct {
