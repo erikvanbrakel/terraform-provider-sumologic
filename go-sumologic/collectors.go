@@ -6,7 +6,7 @@ import (
 )
 
 func (s *SumologicClient) GetCollector(id int) (*Collector, error) {
-	data, err := s.Get(fmt.Sprintf("collectors/%d", id))
+	data, _, err := s.Get(fmt.Sprintf("collectors/%d", id))
 
 	if err != nil {
 		return nil, err
@@ -24,15 +24,10 @@ func (s *SumologicClient) DeleteCollector(id int) error {
 	return err
 }
 
-func (s *SumologicClient) CreateCollector(collectorType, name, description, category string) (int, error) {
+func (s *SumologicClient) CreateCollector(collector Collector) (int, error) {
 
 	request := CollectorRequest{
-		Collector: Collector{
-			CollectorType: collectorType,
-			Name:          name,
-			Description:   description,
-			Category:      category,
-		},
+		Collector: collector,
 	}
 
 	var response CollectorResponse
@@ -52,6 +47,22 @@ func (s *SumologicClient) CreateCollector(collectorType, name, description, cate
 	return response.Collector.Id, nil
 }
 
+func (s *SumologicClient) UpdateCollector(collector Collector) error {
+	url := fmt.Sprintf("collectors/%d", collector.Id)
+
+	request := CollectorRequest{
+		Collector: collector,
+	}
+
+	_, err := s.Put(url, request)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type CollectorRequest struct {
 	Collector Collector `json:"collector"`
 }
@@ -61,9 +72,9 @@ type CollectorResponse struct {
 }
 
 type Collector struct {
-	Id            int    `json:"ID"`
-	CollectorType string `json:"collectorType"`
+	Id            int    `json:"id,omitempty"`
+	CollectorType string `json:"collectorType,omitempty"`
 	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Category      string `json:"category"`
+	Description   string `json:"description,omitempty"`
+	Category      string `json:"category,omitempty"`
 }
