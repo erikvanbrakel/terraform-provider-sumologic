@@ -78,7 +78,7 @@ func (s *SumologicClient) CreateHttpSource(
 func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
 
 	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
-	body, err := s.Get(urlPath)
+	body, _, err := s.Get(urlPath)
 
 	if err != nil {
 		return nil, err
@@ -167,7 +167,7 @@ func (s *SumologicClient) CreatePollingSource(name, content_type, category strin
 
 func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingSource, error) {
 	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
-	body, err := s.Get(urlPath)
+	body, _, err := s.Get(urlPath)
 
 	if err != nil {
 		return nil, err

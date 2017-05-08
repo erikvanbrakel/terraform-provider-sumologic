@@ -8,26 +8,29 @@ import (
 )
 
 func resourceSumologicCollector() *schema.Resource {
-	return &schema.Resource {
+	return &schema.Resource{
 		Create: resourceSumologicCollectorCreate,
-		Read: resourceSumologicCollectorRead,
+		Read:   resourceSumologicCollectorRead,
 		Delete: resourceSumologicCollectorDelete,
+		Update: resourceSumologicCollectorUpdate,
 
-		Schema: map[string]*schema.Schema {
-			"name" : {
-				Type: schema.TypeString,
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 			"description": {
-				Type: schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "",
 			},
-			"category" : {
-				Type: schema.TypeString,
-				Required: true,
-				ForceNew: true,
+			"category": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "",
 			},
 		},
 	}
@@ -67,12 +70,10 @@ func resourceSumologicCollectorDelete(d *schema.ResourceData, meta interface{}) 
 func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*sumo.SumologicClient)
 
-	id, err := c.CreateCollector(
-		"Hosted",
-		d.Get("name").(string),
-		d.Get("description").(string),
-		d.Get("category").(string),
-	)
+	id, err := c.CreateCollector(sumo.Collector{
+		CollectorType: "Hosted",
+		Name:          d.Get("name").(string),
+	})
 
 	if err != nil {
 		return err
@@ -80,5 +81,31 @@ func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) 
 
 	d.SetId(strconv.Itoa(id))
 
+	return resourceSumologicCollectorUpdate(d, meta)
+}
+
+func resourceSumologicCollectorUpdate(d *schema.ResourceData, meta interface{}) error {
+
+	collector := resourceToCollector(d)
+
+	c := meta.(*sumo.SumologicClient)
+	err := c.UpdateCollector(collector)
+
+	if err != nil {
+		return err
+	}
+
 	return resourceSumologicCollectorRead(d, meta)
+}
+
+func resourceToCollector(d *schema.ResourceData) sumo.Collector {
+	id, _ := strconv.Atoi(d.Id())
+
+	return sumo.Collector{
+		Id:            id,
+		CollectorType: "Hosted",
+		Name:          d.Get("name").(string),
+		Description:   d.Get("description").(string),
+		Category:      d.Get("category").(string),
+	}
 }

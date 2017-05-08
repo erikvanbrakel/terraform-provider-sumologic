@@ -55,7 +55,38 @@ func (s *SumologicClient) Post(urlPath string, payload interface{}) ([]byte, err
 	return d, nil
 }
 
-func (s *SumologicClient) Get(urlPath string) ([]byte, error) {
+func (s *SumologicClient) Put(urlPath string, payload interface{}) ([]byte, error) {
+
+	relativeUrl, _ := url.Parse(urlPath)
+	url := s.BaseUrl.ResolveReference(relativeUrl)
+
+	_, etag, _ := s.Get(url.String())
+
+	body, _ := json.Marshal(payload)
+	req, _ := http.NewRequest(http.MethodPut, url.String(), bytes.NewBuffer(body))
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("If-Match", etag)
+
+	req.SetBasicAuth(s.AccessId, s.AccessKey)
+
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	d, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode >= 400 {
+		var errorResponse ErrorResponse
+		_ = json.Unmarshal(d, &errorResponse)
+		return nil, errors.New(errorResponse.Message)
+	}
+
+	return d, nil
+}
+
+func (s *SumologicClient) Get(urlPath string) ([]byte, string, error) {
 	relativeUrl, _ := url.Parse(urlPath)
 	url := s.BaseUrl.ResolveReference(relativeUrl)
 
@@ -70,10 +101,10 @@ func (s *SumologicClient) Get(urlPath string) ([]byte, error) {
 	if resp.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		_ = json.Unmarshal(d, &errorResponse)
-		return nil, errors.New(errorResponse.Message)
+		return nil, "", errors.New(errorResponse.Message)
 	}
 
-	return d, nil
+	return d, resp.Header.Get("ETag"), nil
 }
 
 func (s *SumologicClient) Delete(urlPath string) ([]byte, error) {
