@@ -7,25 +7,25 @@ import (
 
 // Common for all sources
 type Source struct {
-	Id 				int `json:"id,omitempty"`
-	Type				string `json:"sourceType"`
-	Name				string `json:"name"`
-	Description			string `json:"description,omitempty"`
-	Category			string `json:"category,omitempty"`
-	HostName			string `json:"hostName,omitempty"`
-	TimeZone			string `json:"timeZone,omitempty"`
-	AutomaticDateParsing		bool `json:"automaticDateParsing,omitempty"`
-	MultilineProcessingEnabled	bool `json:"multilineProcessingEnabled,omitempty"`
-	UseAutolineMatching		bool `json:"useAutolineMatching,omitempty"`
-	ManualPrefixRegexp		string `json:"manualPrefixRegexp,omitempty"`
-	ForceTimeZone			bool `json:"forceTimeZone,omitempty"`
-	DefaultDateFormat		string `json:"defaultDateFormat,omitempty"`
-	Filters				[]string `json:"filters,omitempty"`
-	CutoffTimestamp			int64 `json:"cutoffTimestamp,omitempty"`
-	CutoffRelativeTime		string `json:"cutoffTimestamp,omitempty"`
+	Id                         int      `json:"id,omitempty"`
+	Type                       string   `json:"sourceType"`
+	Name                       string   `json:"name"`
+	Description                string   `json:"description,omitempty"`
+	Category                   string   `json:"category,omitempty"`
+	HostName                   string   `json:"hostName,omitempty"`
+	TimeZone                   string   `json:"timeZone,omitempty"`
+	AutomaticDateParsing       bool     `json:"automaticDateParsing,omitempty"`
+	MultilineProcessingEnabled bool     `json:"multilineProcessingEnabled,omitempty"`
+	UseAutolineMatching        bool     `json:"useAutolineMatching,omitempty"`
+	ManualPrefixRegexp         string   `json:"manualPrefixRegexp,omitempty"`
+	ForceTimeZone              bool     `json:"forceTimeZone,omitempty"`
+	DefaultDateFormat          string   `json:"defaultDateFormat,omitempty"`
+	Filters                    []string `json:"filters,omitempty"`
+	CutoffTimestamp            int64    `json:"cutoffTimestamp,omitempty"`
+	CutoffRelativeTime         string   `json:"cutoffTimestamp,omitempty"`
 }
 
-func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (error) {
+func (s *SumologicClient) DestroySource(sourceId int, collectorId int) error {
 
 	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
 
@@ -35,15 +35,15 @@ func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (error) {
 // HTTP source specific
 type HttpSource struct {
 	Source
-	MessagePerRequest bool `json:"messagePerRequest,omitempty"`
-	Url string `json:"url,omitempty"`
+	MessagePerRequest bool   `json:"messagePerRequest,omitempty"`
+	Url               string `json:"url,omitempty"`
 }
 
 func (s *SumologicClient) CreateHttpSource(
-		name, category string,
-		messagePerRequest bool,
-		collectorId int,
-	) (int, error) {
+	name, category string,
+	messagePerRequest bool,
+	collectorId int,
+) (int, error) {
 
 	type HttpSourceMessage struct {
 		Source HttpSource `json:"source"`
@@ -142,10 +142,10 @@ func (s *SumologicClient) CreatePollingSource(name, content_type, category strin
 	request.Source.ScanInterval = scan_interval
 	request.Source.Paused = false
 	request.Source.ThirdPartyRef = PollingThirdPartyRef{
-				Resources: []PollingResource{
-					{ServiceType: content_type, Authentication: auth, Path: path},
-				},
-			}
+		Resources: []PollingResource{
+			{ServiceType: content_type, Authentication: auth, Path: path},
+		},
+	}
 
 	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
 
