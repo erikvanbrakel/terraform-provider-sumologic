@@ -77,4 +77,5 @@ type Collector struct {
 	Name          string `json:"name"`
 	Description   string `json:"description,omitempty"`
 	Category      string `json:"category,omitempty"`
+	TimeZone      string `json:"timeZone,omitempty"`
 }
