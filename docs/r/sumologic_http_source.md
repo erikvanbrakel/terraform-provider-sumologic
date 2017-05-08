@@ -22,8 +22,8 @@ resource "sumologic_collector" "collector" {
 The following arguments are supported:
 - `name` - (Required) The name of the source. This is required, and has to be unique in the scope of the collector. Changing this will force recreation the source.
 - `collector_id` - (Required) The ID of the collector to attach this source to.
-- `category` - (Required) The source category this source logs to.
-- `messagePerRequest` - (Required) When set to `true`, will create one log message per HTTP request.
+- `category` - (Optional) The source category this source logs to.
+- `messagePerRequest` - (Optional) When set to `true`, will create one log message per HTTP request.
 
 ## Attributes reference
 The following attributes are exported:
