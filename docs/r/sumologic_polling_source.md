@@ -6,12 +6,12 @@ __IMPORTANT:__ The AWS credentials are stored in plain-text in the state. This i
 ## Example Usage
 ```hcl
 resource "sumologic_polling_source" "s3_audit" {
-    name = "Amazon S3 Audit"
-    category = "aws/s3audit"
-    content_type = "AwsS3AuditBucket"
+    name          = "Amazon S3 Audit"
+    category      = "aws/s3audit"
+    content_type  = "AwsS3AuditBucket"
     scan_interval = 1
-    paused = false
-    collector_id = "${sumologic_collector.collector.id}"
+    paused        = false
+    collector_id  = "${sumologic_collector.collector.id}"
 
     authentication {
         access_key = "AKIAIOSFODNN7EXAMPLE"
@@ -19,7 +19,7 @@ resource "sumologic_polling_source" "s3_audit" {
     }
 
     path {
-        bucket_name = "Bucket1"
+        bucket_name     = "Bucket1"
         path_expression = "*"
     }
 }
