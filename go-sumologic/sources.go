@@ -22,7 +22,7 @@ type Source struct {
 	DefaultDateFormat          string   `json:"defaultDateFormat,omitempty"`
 	Filters                    []string `json:"filters,omitempty"`
 	CutoffTimestamp            int64    `json:"cutoffTimestamp,omitempty"`
-	CutoffRelativeTime         string   `json:"cutoffTimestamp,omitempty"`
+	CutoffRelativeTime         string   `json:"cutoffRelativeTime,omitempty"`
 }
 
 func (s *SumologicClient) DestroySource(sourceId int, collectorId int) error {
