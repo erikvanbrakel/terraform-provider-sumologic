@@ -1,11 +1,11 @@
 # sumologic_http_source
 Provides a [Sumologic HTTP source][1].
 
-__IMPORTANT:__ The endpoint is stored in plain-text in the state. This could be a potential security issue.
+__IMPORTANT:__ The endpoint is stored in plain-text in the state. This is a potential security issue.
 
 ## Example Usage
 ```hcl
-resource "sumologic_http_sourc" "http_source" {
+resource "sumologic_http_source" "http_source" {
     name              = "HTTP"
     messagePerRequest = true
     category          = "my/source/category"
