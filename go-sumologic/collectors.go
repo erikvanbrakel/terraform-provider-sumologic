@@ -25,7 +25,7 @@ func(s *SumologicClient) DeleteCollector(id int) error {
 	return err
 }
 
-func (s *SumologicClient) CreateCollector(collectorType, name, description, category string) (*Collector, error) {
+func (s *SumologicClient) CreateCollector(collectorType, name, description, category string) (int, error) {
 
 	request := CollectorRequest{
 		Collector: Collector{
@@ -41,17 +41,17 @@ func (s *SumologicClient) CreateCollector(collectorType, name, description, cate
 	responseBody, err := s.Post("collectors", request)
 
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
 
 	err = json.Unmarshal(responseBody, &response)
 
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
 
 
-	return &response.Collector, nil
+	return response.Collector.Id, nil
 }
 
 
