@@ -67,7 +67,7 @@ func resourceSumologicCollectorDelete(d *schema.ResourceData, meta interface{}) 
 func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*sumo.SumologicClient)
 
-	collector, err := c.CreateCollector(
+	id, err := c.CreateCollector(
 		"Hosted",
 		d.Get("name").(string),
 		d.Get("description").(string),
@@ -78,7 +78,7 @@ func resourceSumologicCollectorCreate(d *schema.ResourceData, meta interface{}) 
 		return err
 	}
 
-	d.SetId(strconv.Itoa(collector.Id))
+	d.SetId(strconv.Itoa(id))
 
 	return resourceSumologicCollectorRead(d, meta)
 }
