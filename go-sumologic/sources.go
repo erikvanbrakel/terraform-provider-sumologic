@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Common for all sources
 type Source struct {
 	Id 				int `json:"id,omitempty"`
 	Type				string `json:"sourceType"`
@@ -24,40 +25,18 @@ type Source struct {
 	CutoffRelativeTime		string `json:"cutoffTimestamp,omitempty"`
 }
 
+func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (error) {
+
+	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
+
+	return err
+}
+
+// HTTP source specific
 type HttpSource struct {
 	Source
 	MessagePerRequest bool `json:"messagePerRequest,omitempty"`
 	Url string `json:"url,omitempty"`
-}
-
-type PollingSource struct {
-	Source
-	ContentType   string               `json:"contentType"`
-	ScanInterval  int                  `json:"scanInterval"`
-	Paused        bool                 `json:"paused"`
-	ThirdPartyRef PollingThirdPartyRef `json:"thirdPartyRef,omitempty"`
-}
-
-type PollingThirdPartyRef struct {
-	Resources []PollingResource `json:"resources"`
-}
-
-type PollingResource struct {
-	ServiceType    string                `json:"serviceType"`
-	Authentication PollingAuthentication `json:"authentication"`
-	Path           PollingPath           `json:"path"`
-}
-
-type PollingAuthentication struct {
-	Type   string `json:"type"`
-	AwsId  string `json:"awsId"`
-	AwsKey string `json:"awsKey"`
-}
-
-type PollingPath struct {
-	Type           string `json:"type"`
-	BucketName     string `json:"bucketName"`
-	PathExpression string `json:"pathExpression"`
 }
 
 func (s *SumologicClient) CreateHttpSource(
@@ -96,13 +75,6 @@ func (s *SumologicClient) CreateHttpSource(
 	return source.Id, nil
 }
 
-func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (error) {
-
-	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
-
-	return err
-}
-
 func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
 
 	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
@@ -122,6 +94,37 @@ func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource,
 	var source = response.Source
 
 	return &source, nil
+}
+
+// Polling source specific
+type PollingSource struct {
+	Source
+	ContentType   string               `json:"contentType"`
+	ScanInterval  int                  `json:"scanInterval"`
+	Paused        bool                 `json:"paused"`
+	ThirdPartyRef PollingThirdPartyRef `json:"thirdPartyRef,omitempty"`
+}
+
+type PollingThirdPartyRef struct {
+	Resources []PollingResource `json:"resources"`
+}
+
+type PollingResource struct {
+	ServiceType    string                `json:"serviceType"`
+	Authentication PollingAuthentication `json:"authentication"`
+	Path           PollingPath           `json:"path"`
+}
+
+type PollingAuthentication struct {
+	Type   string `json:"type"`
+	AwsId  string `json:"awsId"`
+	AwsKey string `json:"awsKey"`
+}
+
+type PollingPath struct {
+	Type           string `json:"type"`
+	BucketName     string `json:"bucketName"`
+	PathExpression string `json:"pathExpression"`
 }
 
 func (s *SumologicClient) CreatePollingSource(name, content_type, category string, scan_interval int, paused bool, collectorId int, auth PollingAuthentication, path PollingPath) (int, error) {
@@ -169,12 +172,13 @@ func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingS
 	if err != nil {
 		return nil, err
 	}
-	var response GetPollingSource
+
+	type PollingSourceResponse struct {
+		Source PollingSource `json:"source"`
+	}
+
+	var response PollingSourceResponse
 	err = json.Unmarshal(body, &response)
 
 	return &response.Source, nil
-}
-
-type GetPollingSource struct {
-	Source PollingSource `json:"source"`
 }
