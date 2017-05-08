@@ -6,7 +6,7 @@ Terraform provider for https://sumologic.com
 ## Installation
 Download the binary for your platform and architecture from the [releases page](https://github.com/erikvanbrakel/terraform-provider-sumologic/releases). Unpack the zip, and place the `terraform-provider-sumologic` binary in the same directory as `terraform` binary or add a `.terraformrc` file with the provider stanza:
 
-```
+```hcl
 providers {
   sumologic = "/PATH/TO/MODULE/ARCH/terraform-provider-sumologic"
 }
