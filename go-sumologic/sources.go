@@ -5,128 +5,123 @@ import (
 	"fmt"
 )
 
-type HttpSource struct {
-	Source struct {
-		Type              string `json:"sourceType"`
-		Id                int    `json:"id,omitempty"`
-		Name              string `json:"name"`
-		MessagePerRequest bool   `json:"messagePerRequest"`
-		Url               string `json:"url"`
-		Category	  string `json:"category"`
-	} `json:"source"`
+// Common for all sources
+type Source struct {
+	Id                         int      `json:"id,omitempty"`
+	Type                       string   `json:"sourceType"`
+	Name                       string   `json:"name"`
+	Description                string   `json:"description,omitempty"`
+	Category                   string   `json:"category,omitempty"`
+	HostName                   string   `json:"hostName,omitempty"`
+	TimeZone                   string   `json:"timeZone,omitempty"`
+	AutomaticDateParsing       bool     `json:"automaticDateParsing,omitempty"`
+	MultilineProcessingEnabled bool     `json:"multilineProcessingEnabled,omitempty"`
+	UseAutolineMatching        bool     `json:"useAutolineMatching,omitempty"`
+	ManualPrefixRegexp         string   `json:"manualPrefixRegexp,omitempty"`
+	ForceTimeZone              bool     `json:"forceTimeZone,omitempty"`
+	DefaultDateFormat          string   `json:"defaultDateFormat,omitempty"`
+	Filters                    []string `json:"filters,omitempty"`
+	CutoffTimestamp            int64    `json:"cutoffTimestamp,omitempty"`
+	CutoffRelativeTime         string   `json:"cutoffRelativeTime,omitempty"`
 }
 
-func (s *SumologicClient) CreateHttpSource(
-		name, category string,
-		messagePerRequest bool,
-		collectorId int,
-	) (*HttpSource, error) {
-	request := HttpSource{}
+func (s *SumologicClient) DestroySource(sourceId int, collectorId int) error {
 
-	request.Source.Type = "HTTP"
-	request.Source.Name = name
-	request.Source.MessagePerRequest = messagePerRequest
-	request.Source.Category = category
-
-	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
-	body, err := s.Post(urlPath, request)
-
-	if err != nil {
-		return nil, err
-	}
-	var response HttpSource
-	err = json.Unmarshal(body, &response)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &response, nil
-}
-
-func (s *SumologicClient) DestroySource(sourceId int, collectorId int) (*HttpSource, error) {
 	_, err := s.Delete(fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId))
 
-	return nil, err
+	return err
 }
 
-func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
-
-	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
-	body, err := s.Get(urlPath)
-
-	if err != nil {
-		return nil, err
-	}
-	var response HttpSource
-	err = json.Unmarshal(body, &response)
-
-	return &response, nil
+// HTTP source specific
+type HttpSource struct {
+	Source
+	MessagePerRequest bool   `json:"messagePerRequest"`
+	Url               string `json:"url,omitempty"`
 }
 
-func (s *SumologicClient) CreatePollingSource(name, content_type, category string, scan_interval int, paused bool, collectorId int, auth PollingAuthentication, path PollingPath) (int, error) {
+func (s *SumologicClient) CreateHttpSource(name string, collectorId int) (int, error) {
 
-	request := CreatePollingSource{
-		ApiVersion: "v1",
-		Source: PollingSource{
-			SourceType:   "Polling",
-			Name:         name,
-			Category:     category,
-			ContentType:  content_type,
-			ScanInterval: scan_interval,
-			Paused:       false,
-			ThirdPartyRef: PollingThirdPartyRef{
-				Resources: []PollingResource{
-					{ServiceType: content_type, Authentication: auth, Path: path},
-				},
-			},
-		},
+	type HttpSourceMessage struct {
+		Source HttpSource `json:"source"`
 	}
+
+	request := HttpSourceMessage{}
+
+	source := HttpSource{}
+
+	source.Type = "HTTP"
+	source.Name = name
+
+	request.Source = source
 
 	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
-
 	body, err := s.Post(urlPath, request)
 
 	if err != nil {
 		return -1, err
 	}
 
-	var response CreatePollingSource
+	var response HttpSourceMessage
 	err = json.Unmarshal(body, &response)
 
-	return response.Source.Id, nil
+	if err != nil {
+		return -1, err
+	}
+
+	newSource := response.Source
+
+	return newSource.Id, nil
 }
 
-func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingSource, error) {
+func (s *SumologicClient) GetHttpSource(collectorId, sourceId int) (*HttpSource, error) {
+
 	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
-	body, err := s.Get(urlPath)
+	body, _, err := s.Get(urlPath)
 
 	if err != nil {
 		return nil, err
 	}
-	var response GetPollingSource
+
+	type Response struct {
+		Source HttpSource `json:"source"`
+	}
+
+	var response Response
 	err = json.Unmarshal(body, &response)
 
-	return &response.Source, nil
+	var source = response.Source
+
+	return &source, nil
 }
 
-type CreatePollingSource struct {
-	ApiVersion string        `json:"api.version"`
-	Source     PollingSource `json:"source"`
+func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) error {
+
+	url := fmt.Sprintf("collectors/%d/sources/%d", collectorId, source.Id)
+
+	type HttpSourceMessage struct {
+		Source HttpSource `json:"source"`
+	}
+
+	request := HttpSourceMessage{
+		Source: source,
+	}
+
+	_, err := s.Put(url, request)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
-type GetPollingSource struct {
-	Source PollingSource `json:"source"`
-}
-
+// Polling source specific
 type PollingSource struct {
-	Id            int                  `json:"id,omitempty"`
-	SourceType    string               `json:"sourceType"`
-	Name          string               `json:"name"`
+	Source
 	ContentType   string               `json:"contentType"`
 	ScanInterval  int                  `json:"scanInterval"`
 	Paused        bool                 `json:"paused"`
-	Category      string               `json:"category"`
 	ThirdPartyRef PollingThirdPartyRef `json:"thirdPartyRef,omitempty"`
 }
 
@@ -150,4 +145,60 @@ type PollingPath struct {
 	Type           string `json:"type"`
 	BucketName     string `json:"bucketName"`
 	PathExpression string `json:"pathExpression"`
+}
+
+func (s *SumologicClient) CreatePollingSource(name, content_type, category string, scan_interval int, paused bool, collectorId int, auth PollingAuthentication, path PollingPath) (int, error) {
+
+	type PollingSourceMessage struct {
+		Source PollingSource `json:"source"`
+	}
+
+	request := PollingSourceMessage{}
+
+	request.Source.Type = "Polling"
+	request.Source.Name = name
+	request.Source.Category = category
+	request.Source.ContentType = content_type
+	request.Source.ScanInterval = scan_interval
+	request.Source.Paused = false
+	request.Source.ThirdPartyRef = PollingThirdPartyRef{
+		Resources: []PollingResource{
+			{ServiceType: content_type, Authentication: auth, Path: path},
+		},
+	}
+
+	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
+
+	body, err := s.Post(urlPath, request)
+
+	if err != nil {
+		return -1, err
+	}
+
+	var response PollingSourceMessage
+	err = json.Unmarshal(body, &response)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return response.Source.Id, nil
+}
+
+func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingSource, error) {
+	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
+	body, _, err := s.Get(urlPath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	type PollingSourceResponse struct {
+		Source PollingSource `json:"source"`
+	}
+
+	var response PollingSourceResponse
+	err = json.Unmarshal(body, &response)
+
+	return &response.Source, nil
 }
