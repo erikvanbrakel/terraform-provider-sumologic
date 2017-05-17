@@ -116,7 +116,6 @@ func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) e
 
 }
 
-
 // Polling source specific
 type PollingSource struct {
 	Source

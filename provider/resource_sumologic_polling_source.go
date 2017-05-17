@@ -1,71 +1,71 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
+	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
 )
 
 func resourceSumologicPollingSource() *schema.Resource {
-	return &schema.Resource {
+	return &schema.Resource{
 		Create: resourceSumologicPollingSourceCreate,
-		Read: resourceSumologicPollingSourceRead,
+		Read:   resourceSumologicPollingSourceRead,
 		Delete: resourceSumologicPollingSourceDelete,
 
-		Schema: map[string]*schema.Schema {
-			"name" : {
-				Type: schema.TypeString,
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"category" : {
-				Type: schema.TypeString,
+			"category": {
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"content_type" : {
-				Type: schema.TypeString,
+			"content_type": {
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"scan_interval" : {
-				Type: schema.TypeInt,
+			"scan_interval": {
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
-			"paused" : {
-				Type: schema.TypeBool,
+			"paused": {
+				Type:     schema.TypeBool,
 				Required: true,
 				ForceNew: true,
 			},
-			"collector_id" : {
-				Type: schema.TypeInt,
+			"collector_id": {
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
-			"authentication" : {
-				Type: schema.TypeList,
+			"authentication": {
+				Type:     schema.TypeList,
 				Required: true,
 				ForceNew: true,
 				MinItems: 1,
 				MaxItems: 1,
-				Elem: &schema.Resource {
-					Schema: map[string]*schema.Schema {
-						"access_key" : {
-							Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"access_key": {
+							Type:     schema.TypeString,
 							Required: true,
 							ForceNew: true,
 						},
-						"secret_key" : {
-							Type: schema.TypeString,
+						"secret_key": {
+							Type:     schema.TypeString,
 							Required: true,
 							ForceNew: true,
 						},
 					},
 				},
 			},
-			"path" : {
-				Type: schema.TypeList,
+			"path": {
+				Type:     schema.TypeList,
 				Required: true,
 				ForceNew: true,
 				MinItems: 1,
@@ -73,12 +73,12 @@ func resourceSumologicPollingSource() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"bucket_name": {
-							Type: schema.TypeString,
+							Type:     schema.TypeString,
 							Required: true,
 							ForceNew: true,
 						},
 						"path_expression": {
-							Type: schema.TypeString,
+							Type:     schema.TypeString,
 							Required: true,
 							ForceNew: true,
 						},
@@ -129,7 +129,6 @@ func resourceSumologicPollingSourceCreate(d *schema.ResourceData, meta interface
 		return err
 	}
 
-
 	id := strconv.Itoa(sourceId)
 
 	d.SetId(id)
@@ -144,12 +143,17 @@ func resourceSumologicPollingSourceRead(d *schema.ResourceData, meta interface{}
 	id, err := strconv.Atoi(d.Id())
 	collector_id := d.Get("collector_id").(int)
 
+	source, err := c.GetPollingSource(collector_id, id)
+
 	if err != nil {
 		return err
 	}
 
-	_, err = c.GetPollingSource(collector_id, id)
-
+	d.Set("name", source.Name)
+	d.Set("content_type", source.ContentType)
+	d.Set("category", source.Category)
+	d.Set("scan_interval", source.ScanInterval)
+	d.Set("paused", source.Paused)
 
 	return nil
 }
