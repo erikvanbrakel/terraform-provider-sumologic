@@ -23,18 +23,18 @@ func resourceSumologicHttpSource() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: false,
-				Default:  false,
+				Default: false,
 			},
 			"collector_id": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
-			"category": {
-				Type:     schema.TypeString,
+			"category" : {
+				Type:	  schema.TypeString,
 				Optional: true,
 				ForceNew: false,
-				Default:  "",
+				Default: "",
 			},
 			"url": {
 				Type:     schema.TypeString,
@@ -103,7 +103,6 @@ func resourceSumologicHttpSourceRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	d.Set("name", source.Name)
-	d.Set("category", source.Category)
 	d.Set("message_per_request", source.MessagePerRequest)
 	d.Set("url", source.Url)
 

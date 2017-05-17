@@ -102,7 +102,7 @@ func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) e
 		Source HttpSource `json:"source"`
 	}
 
-	request := HttpSourceMessage{
+	request := HttpSourceMessage {
 		Source: source,
 	}
 

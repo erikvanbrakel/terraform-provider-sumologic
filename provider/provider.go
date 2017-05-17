@@ -25,7 +25,7 @@ func Provider() terraform.ResourceProvider {
 			"environment": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "eu",
+				Default:  "au",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
