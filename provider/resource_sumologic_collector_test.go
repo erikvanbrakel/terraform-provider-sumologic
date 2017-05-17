@@ -31,6 +31,7 @@ resource "sumologic_collector" "test" {
   name = "MyCollector"
   description = "MyCollectorDesc"
   category = "Cat"
+  timezone = "Europe/Berlin"
 }
 
 `
