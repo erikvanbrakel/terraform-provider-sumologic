@@ -19,11 +19,33 @@ Setting your environment
 Create the couple environment variables below:
 $GOROOT = $HOME/go
 $GOPATH = $GOROOT/bin
-The GOPATH can be set wherever you want but please read this [topic](https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot) to understand how they workasdasd
+The GOPATH can be set wherever you want but please read this [topic](https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot) to understand how they work
 
-Clone repository to: `$GOPATH/src/github.com/erikvanbrakel/terraform-provider-sumologic`
+Clone repository to: `$GOPATH/src/github.com/erikvanbrakel/terraform-provider-sumologic`:
 
+```sh
+$ mkdir -p $GOPATH/srcgithub.com/erikvanbrakel; cd $GOPATH/src/github.com/erikvanbrakel/
+$ git clone https://github.com/erikvanbrakel/terraform-provider-sumologic.git
+```
 
+Enter the provider directory and build the provider
+
+```sh
+$ cd $GOPATH/src/github.com/erikvanbrakel/terraform-provider-sumologic
+$ go build
+```
+
+Run the tests
+
+```sh
+$ go test -v provider/
+```
+
+Generate the provider binary (the binary will be generated in your current directory where you run this command)
+
+```sh
+$ go build -o terraform-provider-sumologic
+```
 
 
 ## Usage
