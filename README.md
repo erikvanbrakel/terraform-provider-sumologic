@@ -19,6 +19,7 @@ Setting your environment
 Create the couple environment variables below:
 
 $GOROOT = $HOME/go
+
 $GOPATH = $GOROOT/bin
 
 The GOPATH can be set wherever you want but please read this [topic](https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot) to understand how they work
