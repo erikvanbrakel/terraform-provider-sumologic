@@ -61,6 +61,7 @@ func resourceSumologicCollectorRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("name", collector.Name)
 	d.Set("description", collector.Description)
 	d.Set("category", collector.Category)
+	d.Set("timezone", collector.TimeZone)
 
 	return nil
 }
