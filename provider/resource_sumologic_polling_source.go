@@ -4,6 +4,7 @@ import (
 	"github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
+	"log"
 )
 
 func resourceSumologicPollingSource() *schema.Resource {
@@ -149,6 +150,9 @@ func resourceSumologicPollingSourceRead(d *schema.ResourceData, meta interface{}
 		return err
 	}
 
+	pollingResource := source.ThirdPartyRef.Resources
+	thirdyPartyRefSourceAttributes(d, pollingResource)
+
 	d.Set("name", source.Name)
 	d.Set("content_type", source.ContentType)
 	d.Set("category", source.Category)
@@ -161,3 +165,24 @@ func resourceSumologicPollingSourceRead(d *schema.ResourceData, meta interface{}
 func resourceSumologicPollingSourceDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
+
+func thirdyPartyRefSourceAttributes(d *schema.ResourceData, pollingResource []sumologic.PollingResource) error {
+
+	var s []map[string]interface{}
+	for _, t := range pollingResource {
+		mapping := map[string]interface{}{
+			"bucket_name":        t.Path.BucketName,
+			"path_expression":    t.Path.PathExpression,
+		}
+
+		log.Printf("[DEBUG] pollingResources - adding bukets and path expressions: %v", mapping)
+		s = append(s, mapping)
+	}
+
+	if err := d.Set("path", s); err != nil {
+		return err
+	}
+
+	return nil
+}
+
