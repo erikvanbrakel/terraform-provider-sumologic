@@ -4,7 +4,6 @@ import (
 	"github.com/erikvanbrakel/terraform-provider-sumologic/go-sumologic"
 	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
-	"log"
 )
 
 func resourceSumologicPollingSource() *schema.Resource {
