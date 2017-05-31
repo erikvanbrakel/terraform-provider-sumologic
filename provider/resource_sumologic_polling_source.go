@@ -151,7 +151,7 @@ func resourceSumologicPollingSourceRead(d *schema.ResourceData, meta interface{}
 	}
 
 	pollingResource := source.ThirdPartyRef.Resources
-	thirdyPartyRefSourceAttributes(d, pollingResource)
+	thirdyPartyPathSourceAttributes(d, pollingResource)
 
 	d.Set("name", source.Name)
 	d.Set("content_type", source.ContentType)
@@ -166,7 +166,7 @@ func resourceSumologicPollingSourceDelete(d *schema.ResourceData, meta interface
 	return nil
 }
 
-func thirdyPartyRefSourceAttributes(d *schema.ResourceData, pollingResource []sumologic.PollingResource) error {
+func thirdyPartyPathSourceAttributes(d *schema.ResourceData, pollingResource []sumologic.PollingResource) error {
 
 	var s []map[string]interface{}
 	for _, t := range pollingResource {
@@ -174,8 +174,6 @@ func thirdyPartyRefSourceAttributes(d *schema.ResourceData, pollingResource []su
 			"bucket_name":        t.Path.BucketName,
 			"path_expression":    t.Path.PathExpression,
 		}
-
-		log.Printf("[DEBUG] pollingResources - adding bukets and path expressions: %v", mapping)
 		s = append(s, mapping)
 	}
 
