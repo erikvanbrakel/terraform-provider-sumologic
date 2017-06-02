@@ -8,7 +8,7 @@ install:
   - chmod +x ./build/cross-compile.sh
 
 script:
-  # Testing scripts etc
+  # Testing scripts
 
 after_success: ./build/cross-compile.sh
 
