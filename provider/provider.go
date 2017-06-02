@@ -10,29 +10,28 @@ import (
 )
 
 func Provider() terraform.ResourceProvider {
-	return &schema.Provider {
-		Schema: map[string]*schema.Schema {
+	return &schema.Provider{
+		Schema: map[string]*schema.Schema{
 			"access_id": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default: os.Getenv("SL_ACCESSID"),
+				Default:  os.Getenv("SL_ACCESSID"),
 			},
 			"access_key": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default: os.Getenv("SL_ACCESSKEY"),
-
+				Default:  os.Getenv("SL_ACCESSKEY"),
 			},
 			"environment": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default: "eu",
+				Default:  "eu",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"sumologic_collector" : resourceSumologicCollector(),
-			"sumologic_http_source" : resourceSumologicHttpSource(),
-			"sumologic_polling_source" : resourceSumologicPollingSource(),
+			"sumologic_collector":      resourceSumologicCollector(),
+			"sumologic_http_source":    resourceSumologicHttpSource(),
+			"sumologic_polling_source": resourceSumologicPollingSource(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -45,4 +44,3 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		d.Get("environment").(string),
 	)
 }
-

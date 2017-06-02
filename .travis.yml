@@ -3,12 +3,14 @@ language: go
 go:
   - 1.8
 
+go_import_path: github.com/erikvanbrakel/terraform-provider-sumologic
+
 install:
   - go get -u github.com/mitchellh/gox
   - chmod +x ./build/cross-compile.sh
 
 script:
-  # Testing scripts etc
+  # Testing scripts
 
 after_success: ./build/cross-compile.sh
 

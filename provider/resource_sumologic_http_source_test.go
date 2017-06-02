@@ -1,14 +1,14 @@
 package provider
 
 import (
-	"testing"
 	"github.com/hashicorp/terraform/helper/resource"
+	"testing"
 )
 
 func TestAccSumologicHttpSource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		Providers: testAccProviders,
-		Steps: []resource.TestStep {
+		Steps: []resource.TestStep{
 			{
 				Config: testAccSumologicHttpSourceConfig,
 			},
