@@ -103,6 +103,7 @@ func resourceSumologicHttpSourceRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	d.Set("name", source.Name)
+	d.Set("category", source.Category)
 	d.Set("message_per_request", source.MessagePerRequest)
 	d.Set("url", source.Url)
 
