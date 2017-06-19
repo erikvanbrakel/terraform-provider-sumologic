@@ -203,3 +203,23 @@ func (s *SumologicClient) GetPollingSource(collectorId, sourceId int) (*PollingS
 
 	return &response.Source, nil
 }
+
+func (s *SumologicClient) UpdatePollingSource(source PollingSource, collectorId int) error {
+	url := fmt.Sprintf("collectors/%d/sources/%d", collectorId, source.Id)
+
+	type PollingSourceMessage struct {
+		Source PollingSource `json:"source"`
+	}
+
+	request := PollingSourceMessage {
+		Source: source,
+	}
+
+	_, err := s.Put(url, request)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
