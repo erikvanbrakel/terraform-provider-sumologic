@@ -102,7 +102,7 @@ func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) e
 		Source HttpSource `json:"source"`
 	}
 
-	request := HttpSourceMessage {
+	request := HttpSourceMessage{
 		Source: source,
 	}
 
@@ -115,7 +115,6 @@ func (s *SumologicClient) UpdateHttpSource(source HttpSource, collectorId int) e
 	return nil
 
 }
-
 
 // Polling source specific
 type PollingSource struct {
@@ -222,4 +221,85 @@ func (s *SumologicClient) UpdatePollingSource(source PollingSource, collectorId 
 	}
 
 	return nil
+}
+type CloudsyslogSource struct {
+	Source
+	Token string `json:"token,omitempty"`
+}
+
+func (s *SumologicClient) CreateCloudsyslogSource(name string, collectorId int) (int, error) {
+
+	type CloudsyslogSourceMessage struct {
+		Source CloudsyslogSource `json:"source"`
+	}
+
+	request := CloudsyslogSourceMessage{}
+
+	source := CloudsyslogSource{}
+
+	source.Type = "Cloudsyslog"
+	source.Name = name
+
+	request.Source = source
+
+	urlPath := fmt.Sprintf("collectors/%d/sources", collectorId)
+	body, err := s.Post(urlPath, request)
+
+	if err != nil {
+		return -1, err
+	}
+
+	var response CloudsyslogSourceMessage
+	err = json.Unmarshal(body, &response)
+
+	if err != nil {
+		return -1, err
+	}
+
+	newSource := response.Source
+
+	return newSource.Id, nil
+}
+
+func (s *SumologicClient) GetCloudsyslogSource(collectorId, sourceId int) (*CloudsyslogSource, error) {
+
+	urlPath := fmt.Sprintf("collectors/%d/sources/%d", collectorId, sourceId)
+	body, _, err := s.Get(urlPath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Source CloudsyslogSource `json:"source"`
+	}
+
+	var response Response
+	err = json.Unmarshal(body, &response)
+
+	var source = response.Source
+
+	return &source, nil
+}
+
+func (s *SumologicClient) UpdateCloudsyslogSource(source CloudsyslogSource, collectorId int) error {
+
+	url := fmt.Sprintf("collectors/%d/sources/%d", collectorId, source.Id)
+
+	type CloudsyslogSourceMessage struct {
+		Source CloudsyslogSource `json:"source"`
+	}
+
+	request := CloudsyslogSourceMessage{
+		Source: source,
+	}
+
+	_, err := s.Put(url, request)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
