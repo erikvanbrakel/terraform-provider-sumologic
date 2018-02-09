@@ -9,7 +9,7 @@ resource "sumologic_polling_source" "s3_audit" {
     name          = "Amazon S3 Audit"
     category      = "aws/s3audit"
     content_type  = "AwsS3AuditBucket"
-    scan_interval = 1
+    scan_interval = 300000 # 5 minutes in milliseconds
     paused        = false
     collector_id  = "${sumologic_collector.collector.id}"
 
@@ -35,7 +35,7 @@ resource "sumologic_collector" "collector" {
  - `collector_id` - (Required) The ID of the collector to attach this source to.
  - `category` - (Required) The source category this source logs to.
  - `content_type` - (Required) The content-type of the collected data. Details can be found in the [Sumologic documentation for hosted sources][2].
- - `scan_interval` - (Required) Time interval of scans for new data.
+ - `scan_interval` - (Required) Time interval of scans for new data in milliseconds.
  - `paused` - (Required) When set to true, the scanner is paused. To disable, set to false.
  - `authentication` - (Required) Authentication details for connecting to the S3 bucket.
      + `access_key` - (Required) Your AWS access key
