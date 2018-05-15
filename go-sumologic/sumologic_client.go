@@ -21,6 +21,7 @@ var endpoints map[string]string = map[string]string{
 	"us2": "https://api.us2.sumologic.com/api/v1/",
 	"eu":  "https://api.eu.sumologic.com/api/v1/",
 	"au":  "https://api.au.sumologic.com/api/v1/",
+	"de":  "https://api.de.sumologic.com/api/v1/",
 }
 
 type ErrorResponse struct {
