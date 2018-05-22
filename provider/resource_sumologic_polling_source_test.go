@@ -30,7 +30,7 @@ resource "sumologic_polling_source" "s3_audit" {
     name = "Amazon S3 Audit"
     category = "some/category"
     content_type = "AwsS3AuditBucket"
-    scan_interval = 1
+    scan_interval = 1000
     paused = false
 
     authentication {

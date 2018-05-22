@@ -25,7 +25,7 @@ resource "sumologic_collector" "test" {
 
 resource "sumologic_http_source" "http" {
   name = "test_http"
-  messagePerRequest = true
+  messagePerRequest = false
   category = "source/category"
   collector_id = "${sumologic_collector.test.id}"
 }
