@@ -3,6 +3,7 @@ package provider
 import (
 	"testing"
 	"github.com/hashicorp/terraform/helper/resource"
+	"os"
 )
 
 func TestAccSumologicPollingSource(t *testing.T) {
@@ -17,6 +18,9 @@ func TestAccSumologicPollingSource(t *testing.T) {
 			},
 		}})
 }
+
+var accessKey,_ = os.LookupEnv("AWS_ACCESS_KEY_ID")
+var secretKey,_ = os.LookupEnv("AWS_SECRET_ACCESS_KEY")
 
 var testAccSumologicPollingSourceConfig = `
 resource "sumologic_collector" "AWS" {
@@ -34,12 +38,12 @@ resource "sumologic_polling_source" "s3_audit" {
     paused = false
 
     authentication {
-        access_key = "AKIAIOSFODNN7EXAMPLE"
-        secret_key = "******"
+        access_key = "` + accessKey + `"
+        secret_key = "` + secretKey + `"
     }
 
     path {
-        bucket_name = "Bucket1"
+        bucket_name = "terraform-sumologic-testing-a39dj4f850f"
         path_expression = "*"
     }
 }
