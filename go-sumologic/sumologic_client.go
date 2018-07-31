@@ -99,6 +99,10 @@ func (s *SumologicClient) Get(urlPath string) ([]byte, string, error) {
 
 	d, _ := ioutil.ReadAll(resp.Body)
 
+	if resp.StatusCode == 404 {
+		return nil, "", nil
+	}
+
 	if resp.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		_ = json.Unmarshal(d, &errorResponse)

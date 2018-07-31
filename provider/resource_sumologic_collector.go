@@ -58,6 +58,11 @@ func resourceSumologicCollectorRead(d *schema.ResourceData, meta interface{}) er
 		return err
 	}
 
+	if collector == nil {
+		d.SetId("")
+		return nil
+	}
+
 	d.Set("name", collector.Name)
 	d.Set("description", collector.Description)
 	d.Set("category", collector.Category)
