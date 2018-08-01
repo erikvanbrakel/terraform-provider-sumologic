@@ -129,6 +129,11 @@ func resourceSumologicPollingSourceRead(d *schema.ResourceData, meta interface{}
 		return err
 	}
 
+	if source == nil {
+		d.SetId("")
+		return nil
+	}
+
 	pollingResources := source.ThirdPartyRef.Resources
 	path := getThirdyPartyPathAttributes(pollingResources)
 

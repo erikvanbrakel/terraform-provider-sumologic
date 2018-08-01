@@ -124,6 +124,9 @@ func (s *SumologicClient) Delete(urlPath string) ([]byte, error) {
 
 	d, _ := ioutil.ReadAll(resp.Body)
 
+	if resp.StatusCode == 404 {
+		return d, nil
+	}
 	if resp.StatusCode >= 400 {
 		return nil, errors.New(string(d))
 	}
