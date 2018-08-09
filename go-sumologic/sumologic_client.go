@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type SumologicClient struct {
@@ -24,6 +25,8 @@ var endpoints map[string]string = map[string]string{
 	"de":  "https://api.de.sumologic.com/api/v1/",
 }
 
+var rateLimiter = time.Tick(time.Minute / 240)
+
 type ErrorResponse struct {
 	Status  int    `json:"status"`
 	Code    string `json:"code"`
@@ -39,6 +42,7 @@ func (s *SumologicClient) Post(urlPath string, payload interface{}) ([]byte, err
 	req.Header.Add("Content-Type", "application/json")
 	req.SetBasicAuth(s.AccessId, s.AccessKey)
 
+	<-rateLimiter
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
@@ -70,6 +74,7 @@ func (s *SumologicClient) Put(urlPath string, payload interface{}) ([]byte, erro
 
 	req.SetBasicAuth(s.AccessId, s.AccessKey)
 
+	<-rateLimiter
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
@@ -95,6 +100,7 @@ func (s *SumologicClient) Get(urlPath string) ([]byte, string, error) {
 	req.Header.Add("Content-Type", "application/json")
 	req.SetBasicAuth(s.AccessId, s.AccessKey)
 
+	<-rateLimiter
 	resp, _ := http.DefaultClient.Do(req)
 
 	d, _ := ioutil.ReadAll(resp.Body)
